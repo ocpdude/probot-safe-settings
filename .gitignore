@@ -1,0 +1,8 @@
+deployment-settings.yml
+npm-debug.log
+.DS_Store
+node_modules/
+.env
+*.pem
+.vscode
+yarn.lock

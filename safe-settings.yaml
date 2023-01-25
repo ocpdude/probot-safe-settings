@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: safe-settings
+  name: safe-settings
+  namespace: default
+spec:
+  selector:
+    matchLabels:
+      app: safe-settings
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:
+    metadata:
+      labels:
+        app: safe-settings
+    spec:
+      containers:
+      - image: docker.io/yadhav/safe-settings:0.1.0-rc.29
+        name: safe-settings
+        envFrom:
+        - secretRef: 
+            name: app-env
+        
