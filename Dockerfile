@@ -5,23 +5,30 @@ ENV NODE_ENV production
 LABEL version="1.0" \
       description="Probot app which is a modified version of Settings Probot GitHub App"
 
+USER node
+## Set our working directory
+WORKDIR /opt/safe-settings
+
 # We need Python for Probot
 USER root
 RUN apk add --no-cache make python3 && ln -sf python3 /usr/bin/python
-RUN mkdir -p /opt/safe-settings && chown node /opt/safe-settings
+RUN mkdir -p /opt/safe-settings
 
 ## These files are copied separately to allow updates
 ## to the image to be as small as possible
 COPY  package.json /opt/safe-settings/
 COPY  index.js /opt/safe-settings/
 COPY  lib /opt/safe-settings/lib
-COPY  .env /opt/safe-settings/
+# Import environment as a k8s secret instead
+# oc create secret generic app-env --from-env-file=env
+#COPY  .env /opt/safe-settings/
+
+RUN chown -R node:node /opt/safe-settings
+
+RUN mkdir -p /.npm && chgrp -R 0 /.npm && chmod -R g=u /.npm
 
 ## Best practice, don't run as `root`
 USER node
-
-## Set our working directory
-WORKDIR /opt/safe-settings
 
 ## Install the app and dependencies
 RUN npm install

@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: safe-settings
+  namespace: safe-settings
+  labels:
+    app: safe-settings
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: safe-settings
+  template:
+    metadata:
+      labels:
+        app: safe-settings
+    spec:
+      containers:
+      - name: safe-settings
+        image: docker.io/shaker242/probot-safe-settings:latest
+        name: safe-settings
+        envFrom:
+        - secretRef:
+            name: app-env
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 3000
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "256Mi"
+        readinessProbe:
+          tcpSocket:
+            port: 3000
+          timeoutSeconds: 1
+          periodSeconds: 30
+          successThreshold: 1
+          failureThreshold: 3
+      #   volumeMounts:
+      #   - mountPath: /opt/safe-settings/settings.yaml
+      #     name: safe-settings
+      #     subPath: safe-settings
+      # volumes:
+      # - name: safe-settings
+      #   configMap:
+      #     name: safe-settings-properties
+
+
